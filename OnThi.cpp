@@ -24,7 +24,7 @@ Giải thích đề bài:
 - Cuối cùng, ta sẽ in ra mảng ds[].
 */
 
-void findRightElements(int A[], int n) {
+void cau1(int A[], int n) {
     int ds[n];
     stack<int> s;
 
@@ -137,9 +137,32 @@ void DieuChinh(Nut *T) {
 /*
 Câu 4 (2 điểm)
 Cho dãy số nguyên gồm n phần tử a, a, ..., a[n-1].
-
-a. (1.0 đ) Viết thuật toán sắp xếp nhanh (Quick Sort) để sắp xếp dãy số trên theo thứ tự tăng dần.
-
-b. (1.0 đ) Áp dụng thuật toán trên trình bày các bước thực hiện sắp xếp dãy sau: a={7, 12, 13, 6, 3, 9, 5, 10, 8}
 */
 
+// a. (1.0 đ) Viết thuật toán sắp xếp nhanh (Quick Sort) để sắp xếp dãy số trên theo thứ tự tăng dần.
+void QuickSort(int a[], int left, int right) {
+    if (left < right) {
+        int pivot = a[(left + right) / 2];
+        int i = left, j = right;
+        while (i <= j) {
+            while (a[i] < pivot) i++;
+            while (a[j] > pivot) j--;
+            if (i <= j) {
+                swap(a[i], a[j]);
+                i++;
+                j--;
+            }
+        }
+        QuickSort(a, left, j);
+        QuickSort(a, i, right);
+    }
+}
+
+// b. (1.0 đ) Áp dụng thuật toán trên trình bày các bước thực hiện sắp xếp dãy sau: a={7, 12, 13, 6, 3, 9, 5, 10, 8}
+/*
+7 12 13 6 3 9 5 10 8
+6 3 5 7 12 13 9 10 8
+3 5 6 7 12 13 9 10 8
+10 8 9 7 12 13 6 3 5
+7 8 9 10 12 13 3 5 6
+*/
