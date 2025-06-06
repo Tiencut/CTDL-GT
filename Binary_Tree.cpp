@@ -47,6 +47,37 @@ int minInFo(Nut *T) {
     return minVal;
 }
 
+// T khác rỗng, giá trị Info lớn nhất trong cây
+int maxInFo(Nut *T) {
+    if (T == NULL) return INT_MIN; // hoặc 1 giá trị nhỏ tùy đề
+    int maxLeft = maxInFo(T->Left);
+    int maxRight = maxInFo(T->Right);
+    int maxVal = T->Info;
+    if (maxLeft > maxVal) maxVal = maxLeft;
+    if (maxRight > maxVal) maxVal = maxRight;
+    return maxVal;
+}
+
+// 
+void DieuChinh(Nut *T) {
+    if (T == NULL) return;
+    if (T->Left != NULL && T->Info < T->Left->Info) {
+        int tmp = T->Info;
+        T->Info = T->Left->Info;
+        T->Left->Info = tmp;
+        DieuChinh(T->Left);
+    }
+    if (T->Right != NULL && T->Info < T->Right->Info) {
+        int tmp = T->Info;
+        T->Info = T->Right->Info;
+        T->Right->Info = tmp;
+        DieuChinh(T->Right);
+    }
+    // Sau khi đổi, cần kiểm tra lại cả hai phía
+    DieuChinh(T->Left);
+    DieuChinh(T->Right);
+}
+
 
 // Duyệt cây
 void preOrder(Nut *T) {

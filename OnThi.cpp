@@ -60,22 +60,20 @@ struct NutGV {
     NutGV *Down;
     NutM *DSM;
 };
-
 NutGV *FirstT;
 
-// a) (1.5 đ) hàm Addr(NutGV *FirstT, St8 BMaGV) return địa chỉ (mã giáo viên là BMaGV, || NULL nếu không có)
+// a) (1.5 đ) hàm Addr(NutGV *FirstT, St8 BMaGV) return địa chỉ (mã giáo viên: BMaGV, NULL nếu không có)
 NutGV *Addr(NutGV *FirstT, St8 BMaGV) {
     NutGV *p = FirstT;
     while (p != NULL) {
-        if (strcmp(p->MaGV, BMaGV) == 0) {
+        if (strcmp(p->MaGV, BMaGV) == 0)
             return p;
-        }
         p = p->Down;
     }
     return NULL;
 }
 
-// b) (1.5 đ) hàm ListOfTeachers(NutGV *FirstT, int BMaM), liệt kê giáo viên dạy mã môn học là BMaM.
+// b) (1.5 đ) hàm ListOfTeachers(NutGV *FirstT, int BMaM), show giáo viên dạy mã môn học: BMaM.
 void ListOfTeachers(NutGV *FirstT, int BMaM) {
     NutGV *p = FirstT;
     while (p != NULL) {
