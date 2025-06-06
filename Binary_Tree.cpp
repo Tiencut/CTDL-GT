@@ -2,170 +2,165 @@
 using namespace std;
 
 // Binary Tree Node
-typedef struct Node NODE;
+typedef struct Nut NUT;
 
-struct Node {
-    int key;
-    Node *left;
-    Node *right;
+struct Nut {
+    int Info;
+    Nut *Left, *Right;
 };
+Nut *T;
 
-NODE *createNode(int x) {
-    NODE *n = new Node;
-    n->key = x;
-    n->left = n->right = nullptr;
+NUT *createNode(int x) {
+    NUT *n = new Nut;
+    n->Info = x;
+    n->Left = n->Right = nullptr;
     return n;
 }
 
-// tìm kiếm theo đệ quy
-NODE *searchNodeRecursive(Node *root, int x) {
-    if(root == nullptr) {
-        return nullptr;
+// Đếm số nút
+int SoNut(Nut *T) {
+    if (T == nullptr) {
+        return 0;
     }
-    if(root->key == x) {
-        return root;
-    }
-    if(x < root->key) {
-        return searchNodeRecursive(root->left, x);
-    } else {
-        return searchNodeRecursive(root->right, x);
-    }
+    return 1 + SoNut(T->Left) + SoNut(T->Right);
 }
 
-// tìm kiếm theo vòng lặp
-Node *searchNodeVongLap(Node *root, int x) {
-    Node *p = root;
-    while (p != nullptr) {
-        if(p->key == x) 
-            return p;
-        else if(x < p->key)
-            p = p->left;
-        else
-            p = p->right;
-
+// Đếm số lá
+int SoLa(Nut *T) {
+    if (T == nullptr) {
+        return 0;
     }
-    return nullptr;
-}
-
-// insert
-Node *insertNodeRecursive(Node *root, int x) {
-    if(root == nullptr)
-        return createNode(x);
-    else if (x < root->key)
-        return insertNodeRecursive(root->left, x);
-    else if (x > root->key)
-        return insertNodeRecursive(root->right, x);
-    else
-        return root; // không chèn node trùng    
-}
-
-Node *insertNodeIterative(Node *root, int x) {
-    if (root == nullptr)
-        return createNode(x);
-    
-    Node *tmp = root;
-    Node *parent = nullptr;
-    
-    while(tmp != nullptr) {
-        parent = tmp;
-        if(x < tmp->key)
-            tmp = tmp->left;
-        else if (x > tmp->key)
-            tmp = tmp->right;
-        else
-            // Nếu giá trị đã tồn tại, không chèn thêm
-            return root;
+    if (T->Left == nullptr && T->Right == nullptr) {
+        return 1; // Nút lá
     }
-    
-    if (x > parent->key)
-        parent->right = createNode(x);
-    else 
-        parent->left = createNode(x);
-        
-    return root;
+    return SoLa(T->Left) + SoLa(T->Right);
 }
+
+// T khác rỗng, giá trị Info nhỏ nhất trong cây
+int minInFo(Nut *T) {
+    if (T == NULL) return INT_MAX; // hoặc 1 giá trị lớn tùy đề
+    int minLeft = minInFo(T->Left);
+    int minRight = minInFo(T->Right);
+    int minVal = T->Info;
+    if (minLeft < minVal) minVal = minLeft;
+    if (minRight < minVal) minVal = minRight;
+    return minVal;
+}
+
 
 // Duyệt cây
-// duyệt Node - left - right là duyệt trước
-void preOrder(Node *root) {
-    if(root != nullptr) {
-        cout << root->key << " ";
-        preOrder(root->left);
-        preOrder(root->right);
+void preOrder(Nut *T) {
+    if(T != nullptr) {
+        cout << T->Info << " ";
+        preOrder(T->Left);
+        preOrder(T->Right);
     }
 }
 
-// duyệt left - Node - right là duyệt giữa
-void inOrder(Node *root) {
-    if(root != nullptr) {
-        inOrder(root->left);
-        cout << root->key << " ";
-        inOrder(root->right);
+void inOrder(Nut *T) {
+    if(T != nullptr) {
+        inOrder(T->Left);
+        cout << T->Info << " ";
+        inOrder(T->Right);
     }
 }
 
-// duyệt left - right - Node là duyệt sau
-void postOrder(Node *root) {
-    if(root != nullptr) {
-        postOrder(root->left);
-        postOrder(root->right);
-        cout << root->key << " ";
+void postOrder(Nut *T) {
+    if(T != nullptr) {
+        postOrder(T->Left);
+        postOrder(T->Right);
+        cout << T->Info << " ";
     }
 }
 
-// xóa
-    // Node cần xóa là Node lá (không có con)
-    // Node cần xóa có 1 con
-    // Node cần xóa có 2 con
-Node* deleteNode(Node* root, int key) {
-    if (root == nullptr) {
-        return root; // Cây rỗng
+// Thêm node vào cây nhị phân tổng quát (thêm vào vị trí đầu tiên còn trống theo thứ tự từ trái sang phải)
+void insertNode(Nut* &T, int x) {
+    if (T == nullptr) {
+        T = createNode(x);
+        return;
     }
-
-    // Tìm nút cần xóa
-    if (key < root->key) {
-        root->left = deleteNode(root->left, key);
-    } else if (key > root->key) {
-        root->right = deleteNode(root->right, key);
-    } else {
-        // Trường hợp 1: Nút không có con
-        if (root->left == nullptr && root->right == nullptr) {
-            delete root;
-            return nullptr;
+    queue<Nut*> q;
+    q.push(T);
+    while (!q.empty()) {
+        Nut* temp = q.front();
+        q.pop();
+        if (temp->Left == nullptr) {
+            temp->Left = createNode(x);
+            return;
+        } else {
+            q.push(temp->Left);
         }
-
-        // Trường hợp 2: Nút có 1 con
-        if (root->left == nullptr) {
-            Node* temp = root->right;
-            delete root;
-            return temp;
-        } else if (root->right == nullptr) {
-            Node* temp = root->left;
-            delete root;
-            return temp;
+        if (temp->Right == nullptr) {
+            temp->Right = createNode(x);
+            return;
+        } else {
+            q.push(temp->Right);
         }
-
-        // Trường hợp 3: Nút có 2 con
-        // Tìm giá trị nhỏ nhất ở cây con bên phải (Inorder Successor)
-        Node* temp = root->right;
-        while (temp->left != nullptr) {
-            temp = temp->left;
-        }
-
-        // Thay thế giá trị của nút cần xóa bằng giá trị của Inorder Successor
-        root->key = temp->key;
-
-        // Xóa Inorder Successor
-        root->right = deleteNode(root->right, temp->key);
     }
-
-    return root;
 }
 
+// Tìm kiếm node theo giá trị (duyệt toàn bộ cây)
+Nut* searchNode(Nut* T, int x) {
+    if (T == nullptr) return nullptr;
+    if (T->Info == x) return T;
+    Nut* left = searchNode(T->Left, x);
+    if (left != nullptr) return left;
+    return searchNode(T->Right, x);
+}
 
-
-
-int main() {
-    NODE *root = nullptr;
-
+// Xóa node theo giá trị (xóa node đầu tiên tìm thấy theo thứ tự duyệt mức)
+void deleteNode(Nut* &T, int key) {
+    if (T == nullptr) return;
+    if (T->Left == nullptr && T->Right == nullptr) {
+        if (T->Info == key) {
+            delete T;
+            T = nullptr;
+        }
+        return;
+    }
+    queue<Nut*> q;
+    q.push(T);
+    Nut* keyNode = nullptr;
+    Nut* temp;
+    Nut* last;
+    while (!q.empty()) {
+        temp = q.front();
+        q.pop();
+        if (temp->Info == key) keyNode = temp;
+        if (temp->Left) {
+            q.push(temp->Left);
+        }
+        if (temp->Right) {
+            q.push(temp->Right);
+        }
+        last = temp;
+    }
+    if (keyNode != nullptr) {
+        keyNode->Info = last->Info;
+        // Xóa last node
+        queue<Nut*> q2;
+        q2.push(T);
+        while (!q2.empty()) {
+            Nut* t = q2.front();
+            q2.pop();
+            if (t->Left) {
+                if (t->Left == last) {
+                    delete t->Left;
+                    t->Left = nullptr;
+                    return;
+                } else {
+                    q2.push(t->Left);
+                }
+            }
+            if (t->Right) {
+                if (t->Right == last) {
+                    delete t->Right;
+                    t->Right = nullptr;
+                    return;
+                } else {
+                    q2.push(t->Right);
+                }
+            }
+        }
+    }
 }
