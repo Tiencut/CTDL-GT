@@ -56,7 +56,7 @@ void MergeSort(int a[], int left, int right) {
         MergeSort(a, mid + 1, right);
         
         // Merge the sorted halves
-        vector<int> temp(right - left + 1);
+        int temp[right - left + 1]; 
         int i = left, j = mid + 1, k = 0;
         while (i <= mid && j <= right) {
             if (a[i] <= a[j]) {
@@ -71,8 +71,8 @@ void MergeSort(int a[], int left, int right) {
         while (j <= right) {
             temp[k++] = a[j++];
         }
-        for (i = left; i <= right; i++) {
-            a[i] = temp[i - left];
+        for (i = left, k = 0; i <= right; i++, k++) {
+            a[i] = temp[k];
         }
     }
 }
